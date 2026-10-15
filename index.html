@@ -17,6 +17,8 @@
     align-items: center;
     padding: 18px 12px 40px;
   }
+
+  /* ===== 首页 ===== */
   #home {
     display: flex; flex-direction: column; align-items: center;
     justify-content: center; min-height: 80vh; gap: 18px; text-align: center;
@@ -46,15 +48,133 @@
   #home .mode-btn .icon { font-size: 28px; }
   #home .mode-btn .desc { font-size: 11px; color: #6f7b99; letter-spacing: 1px; font-weight: 400; }
 
+  /* ===== 游戏区 ===== */
   #game { display: none; flex-direction: column; align-items: center; width: 100%; }
+
+  /* 顶部栏 */
+  .topbar {
+    width: min(560px, 96vw);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .topbar-left { display: flex; gap: 8px; }
+  .topbar-right { display: flex; gap: 8px; }
+
+  .icon-btn {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    border: 1px solid #34405c;
+    background: #1c2333;
+    color: #d7deee;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+    padding: 0;
+    font-weight: 400;
+  }
+  .icon-btn:hover { background: #263149; border-color: #5b8cff; }
+  .icon-btn.active { background: #263149; border-color: #5b8cff; box-shadow: 0 0 12px rgba(90,140,255,.4); }
+
+  .demo-btn {
+    padding: 9px 16px;
+    border-radius: 10px;
+    border: 1px solid #e0b93f;
+    background: linear-gradient(135deg,#8a6a12,#5c4708);
+    color: #ffe9a8;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all .15s;
+    box-shadow: 0 4px 14px rgba(200,160,40,.25);
+    height: 40px;
+  }
+  .demo-btn:hover { background: linear-gradient(135deg,#b08a1a,#6e560c); border-color:#ffd766; }
+  .demo-btn.on {
+    background: linear-gradient(135deg,#c79a1c,#8a6a12);
+    border-color:#ffd766;
+    color:#fff;
+    box-shadow: 0 0 20px rgba(255,215,102,.6);
+  }
+
+  /* 帮助面板 */
+  #helpPanel {
+    width: min(560px, 96vw);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease, margin .3s ease, padding .3s ease;
+    background: #151a26;
+    border: 1px solid #262f45;
+    border-radius: 12px;
+    padding: 0 16px;
+    margin-bottom: 0;
+  }
+  #helpPanel.open {
+    max-height: 320px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  #helpPanel h3 {
+    margin: 0 0 8px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #8ec5ff;
+    font-weight: 800;
+  }
+  #helpPanel ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 12.5px;
+    line-height: 1.9;
+    color: #9aa5bf;
+  }
+  #helpPanel li b { color: #fff; }
+  #helpPanel .k-gold { color: #ffd166; font-weight: 800; }
+  #helpPanel .k-purple { color: #c79aff; font-weight: 800; }
+  #helpPanel .k-dark { color: #000; background: #fff; border-radius: 3px; padding: 0 3px; font-weight: 800; }
+  #helpPanel .k-white { color: #fff; font-weight: 800; }
+
+  /* 标题 */
   h1.game-title {
-    font-size: 22px; letter-spacing: 4px; margin: 4px 0 2px;
+    font-size: 20px; letter-spacing: 4px; margin: 6px 0 2px;
     background: linear-gradient(90deg, #ff6b5b, #5bff9d, #5ba8ff);
     -webkit-background-clip: text; background-clip: text;
     color: transparent; font-weight: 800;
   }
-  .sub.game-sub { font-size: 12px; color: #7a839b; letter-spacing: 1px; margin-bottom: 14px; }
+  .sub.game-sub { font-size: 11px; color: #7a839b; letter-spacing: 2px; margin-bottom: 10px; }
 
+  /* 操作按钮行 */
+  .action-row {
+    width: min(560px, 96vw);
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .action-row button {
+    flex: 1;
+    padding: 10px 6px;
+    border-radius: 10px;
+    border: 1px solid #34405c;
+    background: #1c2333;
+    color: #d7deee;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .action-row button:hover { background: #263149; border-color: #5b8cff; color: #fff; }
+  .action-row button:active { transform: scale(.97); }
+  .action-row button:disabled { opacity:.4; cursor:not-allowed; }
+  .action-row #btnNew { background: linear-gradient(135deg,#2b5cb8,#1b3a75); border-color:#3f74d6; }
+  .action-row #btnNew:hover { background: linear-gradient(135deg,#3a72d6,#234a92); }
+
+  /* ===== 棋盘 ===== */
   #board {
     display: grid;
     grid-template-columns: repeat(4, 128px);
@@ -81,32 +201,41 @@
 
   .cell {
     border-radius: 7px; display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 16px; cursor: pointer;
-    transition: transform .12s, box-shadow .12s, background .12s;
+    font-weight: 900; font-size: 17px; cursor: pointer;
+    transition: transform .12s, box-shadow .12s;
     user-select: none; position: relative; border: 1px solid transparent;
   }
   @media (max-width: 620px) { .cell { font-size: 12px; border-radius: 5px; } }
 
-  .color-R { background: linear-gradient(150deg,#8a2f26,#4d1712); border-color:#e0503f; color:#ffd7d0; }
-  .color-G { background: linear-gradient(150deg,#1d6b41,#0e3521); border-color:#31c977; color:#ccffe2; }
-  .color-B { background: linear-gradient(150deg,#20548c,#0e2745); border-color:#3d9ae6; color:#cfe8ff; }
+  .color-R { background: linear-gradient(150deg,#a33a2e,#5c1a14); border-color:#e0503f; }
+  .color-G { background: linear-gradient(150deg,#227a4b,#0e3521); border-color:#31c977; }
+  .color-B { background: linear-gradient(150deg,#2662a3,#0e2745); border-color:#3d9ae6; }
 
-  .cell.visited { opacity: .95; }
-  .cell.visited::after { content:''; position:absolute; inset:0; border-radius:inherit; background: rgba(0,0,0,.28); pointer-events:none; }
-  .cell.visited { color:#fff; text-shadow: 0 0 8px rgba(255,255,255,.8); }
-  .cell.visited > * { position: relative; z-index: 2; }
-
-  /* 已知数字——不覆盖背景色 */
-  .cell.known {
-    border: 2px dashed #ffe9a8 !important;
-    box-shadow: inset 0 0 0 1px rgba(255,233,168,.25), 0 0 10px rgba(255,233,168,.35);
-  }
-  .cell.known::before {
-    content: '🔒'; position: absolute;
-    top: 0px; right: 2px; font-size: 9px; opacity: .9;
-    z-index: 5; filter: drop-shadow(0 0 2px rgba(0,0,0,.9));
+  /* 固定数字：黑色 + 白色描边，不遮挡颜色 */
+  .num-fixed {
+    color: #000;
+    -webkit-text-stroke: 1.4px #fff;
+    paint-order: stroke fill;
+    text-shadow: 0 0 5px rgba(255,255,255,.65);
+    position: relative; z-index: 3;
+    font-weight: 900;
   }
 
+  /* 玩家填写的数字：白色 + 发光 */
+  .num-player {
+    color: #fff;
+    text-shadow: 0 0 9px rgba(255,255,255,.95), 0 0 3px rgba(0,0,0,.9);
+    position: relative; z-index: 3;
+    font-weight: 900;
+  }
+
+  .cell.visited { opacity: .96; }
+  .cell.visited::after {
+    content:''; position:absolute; inset:0; border-radius:inherit;
+    background: rgba(0,0,0,.28); pointer-events:none;
+  }
+
+  /* 普通移动可达（同面相邻）——金色 */
   .cell.reachable {
     box-shadow: 0 0 0 2px #ffd166, 0 0 14px rgba(255,209,102,.55);
     animation: pulseGold 1.2s infinite ease-in-out;
@@ -115,6 +244,7 @@
     0%,100% { box-shadow: 0 0 0 2px #ffd166, 0 0 10px rgba(255,209,102,.35); }
     50%     { box-shadow: 0 0 0 2px #ffe9a8, 0 0 18px rgba(255,209,102,.85); }
   }
+  /* 触发后可达（跨面）——紫色 */
   .cell.reachable-trigger {
     box-shadow: 0 0 0 2px #b06bff, 0 0 16px rgba(176,107,255,.65);
     animation: pulsePurple 1.3s infinite ease-in-out;
@@ -123,9 +253,10 @@
     0%,100% { box-shadow: 0 0 0 2px #b06bff, 0 0 10px rgba(176,107,255,.4); }
     50%     { box-shadow: 0 0 0 2px #d4aaff, 0 0 22px rgba(176,107,255,.95); }
   }
+
   .cell.current {
     box-shadow: 0 0 0 3px #ffffff, 0 0 22px rgba(255,255,255,.85);
-    z-index: 3; transform: scale(1.04);
+    z-index: 3; transform: scale(1.05);
   }
   .cell.current.can-trigger { animation: curPulse 1s infinite ease-in-out; }
   @keyframes curPulse {
@@ -134,42 +265,105 @@
   }
   .cell.current::after {
     content: '●'; position: absolute;
-    top: 1px; left: 3px; font-size: 8px; color: #fff; z-index: 4;
+    top: 1px; left: 3px; font-size: 8px; color: #fff;
+    z-index: 4; background: none; border-radius: 0;
   }
 
-  #panel {
-    margin-top: 18px; width: min(560px, 96vw);
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  /* ===== 合并信息面板 ===== */
+  #infoPanel {
+    margin-top: 18px;
+    width: min(560px, 96vw);
+    background: #151a26;
+    border: 1px solid #262f45;
+    border-radius: 14px;
+    padding: 14px 16px 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
   }
-  .card {
-    background: #151a26; border: 1px solid #262f45;
-    border-radius: 12px; padding: 10px 12px;
+  .info-row {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
   }
-  .card h3 {
-    margin: 0 0 8px; font-size: 11px;
-    letter-spacing: 2px; color: #6f7b99; font-weight: 700;
+  .info-col {
+    flex: 1;
+    min-width: 0;
   }
-  .sw { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 5px 0; }
-  .dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; }
-  .dot.R { background:#e0503f; box-shadow:0 0 10px #e0503f; }
-  .dot.G { background:#31c977; box-shadow:0 0 10px #31c977; }
-  .dot.B { background:#3d9ae6; box-shadow:0 0 10px #3d9ae6; }
-  .sw .val { margin-left: auto; font-weight: 800; letter-spacing: 1px; }
-  .sw.active { color: #ffe9a8; }
+  .info-col h3 {
+    margin: 0 0 9px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #6f7b99;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .info-divider {
+    width: 1px;
+    background: linear-gradient(180deg, transparent, #2c3a55 15%, #2c3a55 85%, transparent);
+    flex: 0 0 1px;
+  }
+  .info-col.gravity-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 120px;
+    text-align: center;
+  }
 
-  #gravityBox { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; }
+  .sw {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12.5px; padding: 5px 0;
+    transition: color .2s;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+  .dot.R { background:#e0503f; box-shadow:0 0 9px #e0503f; }
+  .dot.G { background:#31c977; box-shadow:0 0 9px #31c977; }
+  .dot.B { background:#3d9ae6; box-shadow:0 0 9px #3d9ae6; }
+  .sw .val {
+    margin-left: auto;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #b8c2d9;
+    font-size: 13px;
+    transition: color .2s;
+  }
+  .sw.active { color: #fff; }
+  .sw.active .val { color: #ffe9a8; text-shadow: 0 0 10px rgba(255,233,168,.6); }
+
+  .gravity-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
   .gdir {
-    font-size: 34px; font-weight: 900; line-height: 1;
-    color: #8ec5ff; text-shadow: 0 0 18px rgba(90,170,255,.8);
-    min-width: 46px; text-align: center;
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1;
+    color: #8ec5ff;
+    text-shadow: 0 0 20px rgba(90,170,255,.9);
   }
-  .gtext { font-size: 13px; color: #9aa5bf; }
-  .gtext b { color: #fff; font-size: 15px; }
+  .gtext {
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .score-line {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #6f7b99;
+    letter-spacing: .5px;
+  }
+  .score-line b { color: #ffe9a8; font-weight: 800; font-size: 12px; }
 
-  #progBarWrap {
-    grid-column: 1 / -1; height: 8px;
-    background: #0d111a; border-radius: 99px;
-    overflow: hidden; border: 1px solid #262f45;
+  .progress-track {
+    height: 6px;
+    background: #0d111a;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-top: 12px;
+    border: 1px solid #262f45;
   }
   #progBar {
     height: 100%; width: 0%;
@@ -177,29 +371,7 @@
     transition: width .25s;
   }
 
-  #btns {
-    grid-column: 1 / -1;
-    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 8px;
-  }
-  @media (max-width: 620px) { #btns { grid-template-columns: 1fr 1fr; } }
-  button {
-    padding: 10px 6px; border-radius: 10px; border: 1px solid #34405c;
-    background: #1c2333; color: #d7deee;
-    font-size: 12px; font-weight: 700; letter-spacing: .5px;
-    cursor: pointer; transition: all .15s; white-space: nowrap;
-  }
-  button:hover { background: #263149; border-color: #4a5c85; color: #fff; }
-  button:active { transform: scale(.97); }
-  button.primary { background: linear-gradient(135deg,#2b5cb8,#1b3a75); border-color:#3f74d6; }
-  button.primary:hover { background: linear-gradient(135deg,#3a72d6,#234a92); }
-  button.lamp { background: linear-gradient(135deg,#8a6a12,#5c4708); border-color:#e0b93f; color:#ffe9a8; }
-  button.lamp:hover { background: linear-gradient(135deg,#b08a1a,#6e560c); border-color:#ffd766; }
-  button.lamp.on { background: linear-gradient(135deg,#c79a1c,#8a6a12); border-color:#ffd766; color:#fff; box-shadow: 0 0 18px rgba(255,215,102,.55); }
-  button.undo { background: #232a3d; border-color: #4a5c85; }
-  button.home { background: #2a1f2e; border-color: #7a4a8a; color: #e0b0ff; }
-  button.home:hover { background: #3d2a42; border-color: #a06ab0; }
-  button:disabled { opacity:.45; cursor:not-allowed; }
-
+  /* Toast */
   #toast {
     position: fixed; left: 50%; top: 26px;
     transform: translateX(-50%) translateY(-20px);
@@ -208,18 +380,14 @@
     font-size: 14px; font-weight: 700;
     opacity: 0; pointer-events: none; transition: all .3s; z-index: 99;
     box-shadow: 0 8px 30px rgba(0,0,0,.6);
+    white-space: nowrap;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  .hint { font-size: 11px; color: #6f7b99; line-height: 1.75; }
-  .hint b { color: #9aa5bf; }
-  .hint .gold { color:#ffd166; }
-  .hint .purple { color:#c79aff; }
-  .hint .known { color:#ffe9a8; }
 </style>
 </head>
 <body>
 
+<!-- ==================== 首页 ==================== -->
 <div id="home">
   <h1>重 力 跃 迁</h1>
   <div class="sub">GRAVITY LEAP</div>
@@ -232,52 +400,71 @@
     <button class="mode-btn" data-mode="simple">
       <span class="icon">🔮</span>
       <span>简单模式</span>
-      <span class="desc">30-40 个提示 · 唯一解</span>
+      <span class="desc">部分提示 · 唯一解</span>
     </button>
   </div>
 </div>
 
+<!-- ==================== 游戏区 ==================== -->
 <div id="game">
+  <!-- 顶部栏：左（首页 / 帮助）  右（演示） -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button id="btnHome" class="icon-btn" title="返回首页">🏠</button>
+      <button id="btnHelp" class="icon-btn" title="玩法说明">❓</button>
+    </div>
+    <div class="topbar-right">
+      <button id="btnDemo" class="demo-btn">💡 演示</button>
+    </div>
+  </div>
+
+  <!-- 帮助面板（点击❓展开） -->
+  <div id="helpPanel">
+    <h3>玩 法 说 明</h3>
+    <ul>
+      <li><b>移动：</b>点击当前格<b>上下左右相邻</b>的格子，小球移动过去。</li>
+      <li><b>触发：</b>点击<b>当前所在格</b>，触发该格颜色对应的开关。红色→上下，绿色→左右，蓝色→前后。触发后重力方向翻转，小球垂直坠落到对应面。</li>
+      <li><b>金色高亮：</b>当前面内可走的相邻格。</li>
+      <li><b>紫色高亮：</b>触发开关后可到达的<b>跨面格</b>。</li>
+      <li><b>数字：</b><span class="k-dark">黑色</span>为固定提示数字，必须与步数匹配；<span class="k-white">白色</span>为玩家已走过的序号。</li>
+      <li><b>演示：</b>点击右上角 💡 进入演示模式。单击空白处走一步，双击空白处撤回一步。</li>
+      <li><b>撤回：</b>随时可点「↶ 撤回」，也可双击空白处撤回。</li>
+    </ul>
+  </div>
+
   <h1 class="game-title">重 力 跃 迁</h1>
   <div class="sub game-sub" id="modeLabel">练习模式</div>
 
+  <!-- 操作按钮行（撤回 / 重来 / 新题） -->
+  <div class="action-row">
+    <button id="btnUndo">↶ 撤回</button>
+    <button id="btnRestart">🔄 重来</button>
+    <button id="btnNew">✨ 新题</button>
+  </div>
+
+  <!-- 棋盘 -->
   <div id="board"></div>
 
-  <div id="panel">
-    <div class="card">
-      <h3>开关状态</h3>
-      <div class="sw" id="swR"><span class="dot R"></span>红色 · 上下<span class="val">↓ 下</span></div>
-      <div class="sw" id="swG"><span class="dot G"></span>绿色 · 左右<span class="val">→ 右</span></div>
-      <div class="sw" id="swB"><span class="dot B"></span>蓝色 · 前后<span class="val">⊗ 后</span></div>
-    </div>
-
-    <div class="card">
-      <h3>玩法</h3>
-      <div class="hint">
-        <b>点击相邻格</b>移动 · <b>点击当前格</b>触发开关<br>
-        <span class="gold">■</span> 金色 = 同面相邻格 · <span class="purple">■</span> 紫色 = 触发后可到达<br>
-        <span class="known">🔒</span> 虚线框 = 已知数字（必须匹配）<br>
-        💡 <b>演示模式</b>：点击空白走一步，双击撤回
+  <!-- 合并信息面板：开关 + 重力 + 进度 -->
+  <div id="infoPanel">
+    <div class="info-row">
+      <div class="info-col">
+        <h3>开关状态</h3>
+        <div class="sw" id="swR"><span class="dot R"></span>红色 · 上下<span class="val">↓ 下</span></div>
+        <div class="sw" id="swG"><span class="dot G"></span>绿色 · 左右<span class="val">→ 右</span></div>
+        <div class="sw" id="swB"><span class="dot B"></span>蓝色 · 前后<span class="val">⊗ 后</span></div>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-col gravity-col">
+        <h3>当前重力</h3>
+        <div class="gravity-display">
+          <div class="gdir" id="gdir">↓</div>
+          <div class="gtext" id="gtext">下</div>
+        </div>
+        <div class="score-line">已通过 <b id="scoreText">1</b> / 54</div>
       </div>
     </div>
-
-    <div class="card" id="gravityBox">
-      <div class="gdir" id="gdir">↓</div>
-      <div class="gtext">
-        当前重力方向：<b id="gtext">下</b><br>
-        <span style="color:#6f7b99">已通过格子：<b id="scoreText" style="color:#ffe9a8">1</b> / 54</span>
-      </div>
-    </div>
-
-    <div id="progBarWrap"><div id="progBar"></div></div>
-
-    <div id="btns">
-      <button id="btnHome" class="home">🏠 首页</button>
-      <button id="btnUndo" class="undo">↶ 撤回</button>
-      <button id="btnDemo" class="lamp">💡 演示</button>
-      <button id="btnRestart">重来</button>
-      <button id="btnNew" class="primary">新题</button>
-    </div>
+    <div class="progress-track"><div id="progBar"></div></div>
   </div>
 </div>
 
@@ -322,7 +509,6 @@ for (const t of TILES) TILE_MAP[t.id] = t;
 function tileAt(face, x, y, z) {
   return TILE_INDEX.get(face + ':' + x + ',' + y + ',' + z);
 }
-
 function neighborsOf(t) {
   const res = [];
   const d = FACE_DEF[t.face];
@@ -339,7 +525,6 @@ function neighborsOf(t) {
   }
   return res;
 }
-
 const NEIGHBOR_IDS = {};
 for (const t of TILES) NEIGHBOR_IDS[t.id] = neighborsOf(t).map(n => n.id);
 
@@ -349,13 +534,11 @@ function project(t, dirKey) {
   c[d.axis] = d.val;
   return tileAt(d.face, c[0], c[1], c[2]);
 }
-
 function flipDir(color, cur) {
   if (color === 'R') return cur === '-y' ? '+y' : '-y';
   if (color === 'G') return cur === '+x' ? '-x' : '+x';
   return cur === '-z' ? '+z' : '-z';
 }
-
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = (Math.random() * (i + 1)) | 0;
@@ -452,7 +635,7 @@ function generatePuzzle() {
 }
 
 /* =========================================================
-   3. 求解器：统计满足已知数字的完整路径（最多 maxSolutions 条）
+   3. 求解器
    ========================================================= */
 function solvePuzzle(knownMap, colors, maxSolutions, nodeLimit) {
   let startId = null;
@@ -476,10 +659,7 @@ function solvePuzzle(knownMap, colors, maxSolutions, nodeLimit) {
 
     path[step - 1] = tileId;
 
-    if (step === 54) {
-      solutions.push(path.slice());
-      return;
-    }
+    if (step === 54) { solutions.push(path.slice()); return; }
 
     const tile = TILE_MAP[tileId];
     const color = colors[tileId];
@@ -487,7 +667,6 @@ function solvePuzzle(knownMap, colors, maxSolutions, nodeLimit) {
     const newDir = flipDir(color, curDir);
     const nextStep = step + 1;
 
-    // 优先尝试触发（跨面跳跃）
     const tgt = project(tile, newDir);
     if (tgt && tgt.id !== tileId && !visited.has(tgt.id)) {
       const k = knownMap[tgt.id];
@@ -501,7 +680,6 @@ function solvePuzzle(knownMap, colors, maxSolutions, nodeLimit) {
       }
     }
 
-    // 同面相邻移动
     for (const nbId of NEIGHBOR_IDS[tileId]) {
       if (visited.has(nbId)) continue;
       const k = knownMap[nbId];
@@ -519,8 +697,7 @@ function solvePuzzle(knownMap, colors, maxSolutions, nodeLimit) {
 }
 
 /* =========================================================
-   4. 简单模式已知数字生成：贪心添加 + 唯一性收敛
-   目标：30-40 个数字，且唯一解
+   4. 简单模式已知数字生成
    ========================================================= */
 function generateKnownForSimple(puzzle) {
   const { colors, solution } = puzzle;
@@ -533,13 +710,12 @@ function generateKnownForSimple(puzzle) {
   }
 
   const NODE_LIMIT = 600000;
-  const MAX_KNOWN = 38;  // 硬上限，超出则停止添加
+  const MAX_KNOWN = 38;
   let guard = 0;
 
   while (guard < 80) {
     const sols = solvePuzzle(known, colors, 2, NODE_LIMIT);
 
-    // 检查是否唯一且等于目标解
     if (sols.length === 1) {
       let ok = true;
       for (let i = 0; i < 54; i++) {
@@ -548,10 +724,8 @@ function generateKnownForSimple(puzzle) {
       if (ok) break;
     }
 
-    // 若当前已知数字已经达到上限，跳出（一般不会到这里）
     if (Object.keys(known).length >= MAX_KNOWN) break;
 
-    // 找到与目标解最早分歧的位置
     let minDiff = 54;
     for (const sol of sols) {
       for (let i = 0; i < 54; i++) {
@@ -563,7 +737,6 @@ function generateKnownForSimple(puzzle) {
     }
     if (minDiff >= 54) break;
 
-    // 在分歧位置添加数字（如果该位置已存在，就往后找第一个空位）
     let added = false;
     for (let i = minDiff; i < 54; i++) {
       if (known[solution[i]] === undefined) {
@@ -576,7 +749,7 @@ function generateKnownForSimple(puzzle) {
     guard++;
   }
 
-  // 后处理：尝试移除一些数字以进一步精简（保持唯一性）
+  // 后处理：随机尝试删除多余数字，保持唯一性
   const order = [];
   for (let i = 1; i < 54; i++) order.push(i);
   shuffle(order);
@@ -669,12 +842,13 @@ const DIR_TEXT = {
   '+z': ['⊙', '前'], '-z': ['⊗', '后'],
 };
 
+/* ---------- 首页与模式切换 ---------- */
 function showHome() {
   document.getElementById('home').style.display = 'flex';
   document.getElementById('game').style.display = 'none';
   exitDemoMode();
+  closeHelp();
 }
-
 function startGame(mode) {
   currentMode = mode;
   document.getElementById('home').style.display = 'none';
@@ -682,14 +856,31 @@ function startGame(mode) {
   document.getElementById('modeLabel').textContent = mode === 'practice' ? '练习模式' : '简单模式';
   newGame();
 }
-
 document.querySelectorAll('.mode-btn').forEach(btn => {
   btn.addEventListener('click', () => startGame(btn.dataset.mode));
 });
 document.getElementById('btnHome').addEventListener('click', showHome);
 
+/* ---------- 帮助面板 ---------- */
+function openHelp() {
+  document.getElementById('helpPanel').classList.add('open');
+  document.getElementById('btnHelp').classList.add('active');
+}
+function closeHelp() {
+  document.getElementById('helpPanel').classList.remove('open');
+  document.getElementById('btnHelp').classList.remove('active');
+}
+document.getElementById('btnHelp').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const p = document.getElementById('helpPanel');
+  if (p.classList.contains('open')) closeHelp();
+  else openHelp();
+});
+
+/* ---------- 生成新题 ---------- */
 function newGame() {
   exitDemoMode();
+  closeHelp();
   toast('正在生成题面…');
   setTimeout(() => {
     const p = generatePuzzle();
@@ -841,6 +1032,7 @@ function checkOver() {
   }
 }
 
+/* ---------- 撤回 ---------- */
 function undo() {
   if (!game) return;
   if (!game.history.length) { toast('没有可撤回的操作'); return; }
@@ -856,6 +1048,7 @@ function undo() {
   toast('已撤回一步');
 }
 
+/* ---------- 演示答案 ---------- */
 function simulateSwitches(n) {
   const sw = { R: '-y', G: '+x', B: '-z' };
   for (let i = 0; i < n - 1; i++) {
@@ -864,7 +1057,6 @@ function simulateSwitches(n) {
   }
   return sw;
 }
-
 function inSyncWithSolution() {
   if (!puzzle || !game) return false;
   const n = game.step;
@@ -873,7 +1065,6 @@ function inSyncWithSolution() {
   const exp = simulateSwitches(n);
   return exp.R === game.switches.R && exp.G === game.switches.G && exp.B === game.switches.B;
 }
-
 function doDemoStep() {
   if (!game || !puzzle) return;
   if (game.step >= 54) {
@@ -917,42 +1108,49 @@ function enterDemoMode() {
   const btn = document.getElementById('btnDemo');
   btn.classList.add('on');
   btn.textContent = '💡 演示中';
-  toast('演示模式：点击空白走一步 · 双击空白撤回');
+  toast('演示模式：单击空白走一步 · 双击空白撤回');
 }
-
 function exitDemoMode() {
   demoMode = false;
-  if (pendingDemoTimer) { clearTimeout(pendingDemoTimer); pendingDemoTimer = null; }
+  if (pendingClickTimer) { clearTimeout(pendingClickTimer); pendingClickTimer = null; }
   const btn = document.getElementById('btnDemo');
   if (btn) { btn.classList.remove('on'); btn.textContent = '💡 演示'; }
 }
-
 function toggleDemo() {
   if (!puzzle) return;
   if (!demoMode) { enterDemoMode(); doDemoStep(); }
   else { exitDemoMode(); toast('已退出演示模式'); }
 }
 
-let pendingDemoTimer = null;
+/* ---------- 空白处点击：单击演示走一步 / 双击撤回 ---------- */
+let pendingClickTimer = null;
+
 document.addEventListener('click', (e) => {
-  if (!demoMode) return;
+  // 忽略按钮 / 格子 / 帮助面板 / 首页
   if (e.target.closest('button')) return;
   if (e.target.closest('.cell')) return;
-  if (pendingDemoTimer) {
-    clearTimeout(pendingDemoTimer);
-    pendingDemoTimer = null;
+  if (e.target.closest('#helpPanel')) return;
+  if (!e.target.closest('#game')) return;
+
+  if (pendingClickTimer) {
+    // 双击 → 撤回
+    clearTimeout(pendingClickTimer);
+    pendingClickTimer = null;
     undo();
     return;
   }
-  pendingDemoTimer = setTimeout(() => {
-    pendingDemoTimer = null;
-    doDemoStep();
-  }, 260);
+  pendingClickTimer = setTimeout(() => {
+    pendingClickTimer = null;
+    if (demoMode) doDemoStep();
+  }, 240);
 });
+
 document.addEventListener('dblclick', (e) => {
   if (e.target.closest('button')) return;
   if (e.target.closest('.cell')) return;
-  if (pendingDemoTimer) { clearTimeout(pendingDemoTimer); pendingDemoTimer = null; }
+  if (e.target.closest('#helpPanel')) return;
+  if (!e.target.closest('#game')) return;
+  if (pendingClickTimer) { clearTimeout(pendingClickTimer); pendingClickTimer = null; }
 });
 
 /* ---------- 渲染 ---------- */
@@ -968,16 +1166,23 @@ function render() {
         const ord = game.order[t.id];
         const known = game.knownNumbers[t.id];
 
+        el.textContent = '';
+
         if (ord) {
-          el.textContent = ord;
+          // 玩家已填写的数字：白色
+          const span = document.createElement('span');
+          span.className = 'num-player';
+          span.textContent = ord;
+          el.appendChild(span);
           el.classList.add('visited');
         } else if (known !== undefined) {
-          el.textContent = known;
-        } else {
-          el.textContent = '';
+          // 固定提示数字：黑色（白描边）
+          const span = document.createElement('span');
+          span.className = 'num-fixed';
+          span.textContent = known;
+          el.appendChild(span);
         }
 
-        if (known !== undefined) el.classList.add('known');
         if (game.reachableMove.has(t.id)) el.classList.add('reachable');
         if (game.reachableTrigger.has(t.id)) el.classList.add('reachable-trigger');
         if (t.id === game.current) {
@@ -988,6 +1193,7 @@ function render() {
     }
   }
 
+  // 开关状态
   const swR = document.getElementById('swR');
   const swG = document.getElementById('swG');
   const swB = document.getElementById('swB');
@@ -999,6 +1205,7 @@ function render() {
   swG.classList.toggle('active', curColor === 'G' && !game.over);
   swB.classList.toggle('active', curColor === 'B' && !game.over);
 
+  // 重力方向
   const gd = DIR_TEXT[game.gravity];
   document.getElementById('gdir').textContent = gd[0];
   document.getElementById('gtext').textContent = gd[1];
@@ -1006,8 +1213,7 @@ function render() {
   document.getElementById('scoreText').textContent = game.step;
   document.getElementById('progBar').style.width = (game.step / 54 * 100) + '%';
 
-  const undoBtn = document.getElementById('btnUndo');
-  undoBtn.disabled = game.history.length === 0;
+  document.getElementById('btnUndo').disabled = game.history.length === 0;
 }
 
 let toastTimer = null;
@@ -1019,6 +1225,7 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
 }
 
+/* ---------- 按钮 ---------- */
 document.getElementById('btnRestart').addEventListener('click', () => {
   if (puzzle) { exitDemoMode(); startFromPuzzle(); toast('已重置本局'); }
 });
@@ -1026,6 +1233,7 @@ document.getElementById('btnNew').addEventListener('click', newGame);
 document.getElementById('btnUndo').addEventListener('click', undo);
 document.getElementById('btnDemo').addEventListener('click', toggleDemo);
 
+/* 启动 */
 showHome();
 </script>
 </body>
