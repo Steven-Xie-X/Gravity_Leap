@@ -87,13 +87,24 @@
   .cell.visited { color:#fff; text-shadow: 0 0 8px rgba(255,255,255,.8); }
   .cell.visited > * { position: relative; z-index: 2; }
 
+  /* 普通移动可达（相邻格）——金色 */
   .cell.reachable {
     box-shadow: 0 0 0 2px #ffd166, 0 0 14px rgba(255,209,102,.55);
-    animation: pulse 1.2s infinite ease-in-out;
+    animation: pulseGold 1.2s infinite ease-in-out;
   }
-  @keyframes pulse {
+  @keyframes pulseGold {
     0%,100% { box-shadow: 0 0 0 2px #ffd166, 0 0 10px rgba(255,209,102,.35); }
     50%     { box-shadow: 0 0 0 2px #ffe9a8, 0 0 18px rgba(255,209,102,.85); }
+  }
+
+  /* 触发后可达（可能在另一个面）——紫色 */
+  .cell.reachable-trigger {
+    box-shadow: 0 0 0 2px #b06bff, 0 0 16px rgba(176,107,255,.65);
+    animation: pulsePurple 1.3s infinite ease-in-out;
+  }
+  @keyframes pulsePurple {
+    0%,100% { box-shadow: 0 0 0 2px #b06bff, 0 0 10px rgba(176,107,255,.4); }
+    50%     { box-shadow: 0 0 0 2px #d4aaff, 0 0 22px rgba(176,107,255,.95); }
   }
 
   .cell.current {
@@ -185,7 +196,6 @@
     transition: width .25s;
   }
 
-  /* ===== 按钮区 ===== */
   #btns {
     grid-column: 1 / -1;
     display: grid;
@@ -211,7 +221,9 @@
   button.primary:hover { background: linear-gradient(135deg,#3a72d6,#234a92); }
   button.lamp { background: linear-gradient(135deg,#8a6a12,#5c4708); border-color:#e0b93f; color:#ffe9a8; }
   button.lamp:hover { background: linear-gradient(135deg,#b08a1a,#6e560c); border-color:#ffd766; }
+  button.lamp.on { background: linear-gradient(135deg,#c79a1c,#8a6a12); border-color:#ffd766; color:#fff; box-shadow: 0 0 18px rgba(255,215,102,.55); }
   button.undo { background: #232a3d; border-color: #4a5c85; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
 
   #toast {
     position: fixed;
@@ -232,8 +244,10 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  .hint { font-size: 11px; color: #6f7b99; line-height: 1.7; }
+  .hint { font-size: 11px; color: #6f7b99; line-height: 1.75; }
   .hint b { color: #9aa5bf; }
+  .hint .gold { color:#ffd166; }
+  .hint .purple { color:#c79aff; }
 </style>
 </head>
 <body>
@@ -255,8 +269,8 @@
     <h3>玩法</h3>
     <div class="hint">
       <b>点击相邻格</b>移动 · <b>点击当前格</b>触发开关<br>
-      触发后小球会沿新重力方向坠落到对应面<br>
-      💡 灯泡：每点一次走一步答案 · ↶ 撤回上一步
+      <span class="gold">■</span> 金色 = 同面相邻格 · <span class="purple">■</span> 紫色 = 触发后可到达<br>
+      💡 <b>演示模式</b>：点击空白处走一步，双击空白处撤回
     </div>
   </div>
 
@@ -364,7 +378,7 @@ function attemptBuild(nodeLimit) {
   let nodes = 0;
   let aborted = false;
   const visited = new Set();
-  const path = []; // { tile, trigger }  trigger: 从该格触发去往下一格
+  const path = [];
 
   const downTiles = TILES.filter(t => t.face === 'D');
   const start = downTiles[(Math.random() * downTiles.length) | 0];
@@ -443,7 +457,7 @@ function generatePuzzle() {
         colors,
         start: res.path[0].tile.id,
         solution: res.path.map(p => p.tile.id),
-        triggers: res.path.map(p => p.trigger), // triggers[i] 从 solution[i] 触发到 solution[i+1]
+        triggers: res.path.map(p => p.trigger),
       };
     }
   }
@@ -509,6 +523,7 @@ for (const f of ['U', 'L', 'F', 'R', 'B', 'D']) {
    ========================================================= */
 let game = null;
 let puzzle = null;
+let demoMode = false;
 
 const DIR_TEXT = {
   '-y': ['↓', '下'], '+y': ['↑', '上'],
@@ -517,6 +532,7 @@ const DIR_TEXT = {
 };
 
 function newGame() {
+  exitDemoMode();
   toast('正在生成题面…');
   setTimeout(() => {
     const p = generatePuzzle();
@@ -537,6 +553,9 @@ function startFromPuzzle() {
     step: 1,
     over: false,
     reachable: new Set(),
+    reachableMove: new Set(),
+    reachableTrigger: new Set(),
+    triggerTargetId: null,
     canTrigger: false,
     history: [],
   };
@@ -557,26 +576,53 @@ function pushHistory() {
   });
 }
 
+/* ============ 核心：更新所有可达格（含触发跨面） ============ */
 function updateReachable() {
   const cur = TILE_MAP[game.current];
+  game.reachableMove = new Set();
+  game.reachableTrigger = new Set();
   game.reachable = new Set();
+  game.triggerTargetId = null;
+  game.canTrigger = false;
+
+  // 1) 当前面相邻格
   for (const nb of neighborsOf(cur)) {
-    if (!game.order[nb.id]) game.reachable.add(nb.id);
+    if (!game.order[nb.id]) {
+      game.reachableMove.add(nb.id);
+      game.reachable.add(nb.id);
+    }
   }
+
+  // 2) 触发后投影到的新面格子（可能在其他面）
   const color = game.colors[game.current];
   const nd = flipDir(color, game.switches[color]);
   const tgt = project(cur, nd);
-  game.canTrigger = !!(tgt && tgt.id !== cur.id && !game.order[tgt.id]);
+
+  if (tgt && tgt.id !== cur.id && !game.order[tgt.id]) {
+    game.reachableTrigger.add(tgt.id);
+    game.reachable.add(tgt.id);
+    game.triggerTargetId = tgt.id;
+    game.canTrigger = true;
+  }
 }
 
 function handleClick(id) {
   if (!game || game.over) return;
+  if (demoMode) exitDemoMode();
+
   if (id === game.current) {
     if (game.canTrigger) doTrigger();
     else toast('此方向已被占据，无法触发');
     return;
   }
-  if (game.reachable.has(id)) doMove(id);
+
+  if (game.triggerTargetId === id) {
+    doTrigger();
+    return;
+  }
+  if (game.reachableMove.has(id)) {
+    doMove(id);
+  }
 }
 
 function doMove(id) {
@@ -589,10 +635,12 @@ function doMove(id) {
 }
 
 function doTrigger() {
+  if (!game.canTrigger) return;
   const color = game.colors[game.current];
   const nd = flipDir(color, game.switches[color]);
   const tgt = project(TILE_MAP[game.current], nd);
   if (!tgt || game.order[tgt.id]) { toast('无法触发'); return; }
+
   pushHistory();
   game.switches[color] = nd;
   game.gravity = nd;
@@ -608,12 +656,14 @@ function checkOver() {
     game.over = true;
     render();
     toast('🎉 完美通关！54 格全部走完！');
+    if (demoMode) exitDemoMode();
     return;
   }
-  if (game.reachable.size === 0 && !game.canTrigger) {
+  if (game.reachable.size === 0) {
     game.over = true;
     render();
     toast('无路可走了 · 共通过 ' + game.step + ' 格');
+    if (demoMode) exitDemoMode();
   }
 }
 
@@ -639,7 +689,6 @@ function undo() {
    6. 演示答案（灯泡）
    ========================================================= */
 function simulateSwitches(n) {
-  // n = 已走过的格子数
   const sw = { R: '-y', G: '+x', B: '-z' };
   for (let i = 0; i < n - 1; i++) {
     const trg = puzzle.triggers[i];
@@ -660,41 +709,108 @@ function inSyncWithSolution() {
 function doDemoStep() {
   if (!game || !puzzle) return;
 
-  if (game.step >= 54) { toast('已经走完全部 54 格啦'); return; }
+  if (game.step >= 54) {
+    toast('已经走完全部 54 格啦');
+    if (demoMode) exitDemoMode();
+    return;
+  }
 
   if (!inSyncWithSolution()) {
     startFromPuzzle();
-    toast('💡 从起点开始演示');
+    toast('💡 从起点重新演示');
   }
 
-  const i = game.step - 1;              // 当前格子对应 solution 下标
-  if (i >= puzzle.solution.length - 1) { toast('已到最后一步'); return; }
+  const i = game.step - 1;
+  if (i >= puzzle.solution.length - 1) {
+    toast('已到最后一步');
+    if (demoMode) exitDemoMode();
+    return;
+  }
 
   const toId = puzzle.solution[i + 1];
   const trg = puzzle.triggers[i];
 
+  pushHistory();
   if (trg) {
     const nd = flipDir(trg, game.switches[trg]);
-    pushHistory();
     game.switches[trg] = nd;
     game.gravity = nd;
-    game.current = toId;
-    game.order[toId] = ++game.step;
-  } else {
-    pushHistory();
-    game.current = toId;
-    game.order[toId] = ++game.step;
   }
+  game.current = toId;
+  game.order[toId] = ++game.step;
 
   updateReachable();
   render();
   checkOver();
+}
 
-  if (game.step >= 54) toast('🎉 演示完成！');
+/* 进入/退出演示模式 */
+function enterDemoMode() {
+  demoMode = true;
+  const btn = document.getElementById('btnDemo');
+  btn.classList.add('on');
+  btn.textContent = '💡 演示中…';
+  toast('演示模式：点击空白处走一步 · 双击空白处撤回');
+}
+
+function exitDemoMode() {
+  demoMode = false;
+  if (pendingDemoTimer) {
+    clearTimeout(pendingDemoTimer);
+    pendingDemoTimer = null;
+  }
+  const btn = document.getElementById('btnDemo');
+  btn.classList.remove('on');
+  btn.textContent = '💡 演示答案';
+}
+
+function toggleDemo() {
+  if (!puzzle) return;
+  if (!demoMode) {
+    enterDemoMode();
+    doDemoStep();
+  } else {
+    exitDemoMode();
+    toast('已退出演示模式');
+  }
 }
 
 /* =========================================================
-   7. 渲染
+   7. 空白处点击：单击走一步 / 双击撤回
+   ========================================================= */
+let pendingDemoTimer = null;
+
+document.addEventListener('click', (e) => {
+  if (!demoMode) return;
+  if (e.target.closest('button')) return;
+  if (e.target.closest('.cell')) return;
+
+  // 空白区域点击
+  if (pendingDemoTimer) {
+    // 检测到双击 → 撤回
+    clearTimeout(pendingDemoTimer);
+    pendingDemoTimer = null;
+    undo();
+    return;
+  }
+  pendingDemoTimer = setTimeout(() => {
+    pendingDemoTimer = null;
+    doDemoStep();
+  }, 260);
+});
+
+// 防止浏览器原生 dblclick 额外触发
+document.addEventListener('dblclick', (e) => {
+  if (e.target.closest('button')) return;
+  if (e.target.closest('.cell')) return;
+  if (pendingDemoTimer) {
+    clearTimeout(pendingDemoTimer);
+    pendingDemoTimer = null;
+  }
+});
+
+/* =========================================================
+   8. 渲染
    ========================================================= */
 function render() {
   if (!game) return;
@@ -708,7 +824,8 @@ function render() {
         const ord = game.order[t.id];
         el.textContent = ord ? ord : '';
         if (ord) el.classList.add('visited');
-        if (game.reachable.has(t.id)) el.classList.add('reachable');
+        if (game.reachableMove.has(t.id)) el.classList.add('reachable');
+        if (game.reachableTrigger.has(t.id)) el.classList.add('reachable-trigger');
         if (t.id === game.current) {
           el.classList.add('current');
           if (game.canTrigger && !game.over) el.classList.add('can-trigger');
@@ -735,8 +852,8 @@ function render() {
   document.getElementById('scoreText').textContent = game.step;
   document.getElementById('progBar').style.width = (game.step / 54 * 100) + '%';
 
-  document.getElementById('btnUndo').disabled = (game.history.length === 0);
-  document.getElementById('btnUndo').style.opacity = game.history.length === 0 ? .45 : 1;
+  const undoBtn = document.getElementById('btnUndo');
+  undoBtn.disabled = game.history.length === 0;
 }
 
 let toastTimer = null;
@@ -749,14 +866,14 @@ function toast(msg) {
 }
 
 /* =========================================================
-   8. 按钮
+   9. 按钮
    ========================================================= */
 document.getElementById('btnRestart').addEventListener('click', () => {
-  if (puzzle) { startFromPuzzle(); toast('已重置本局'); }
+  if (puzzle) { exitDemoMode(); startFromPuzzle(); toast('已重置本局'); }
 });
 document.getElementById('btnNew').addEventListener('click', newGame);
 document.getElementById('btnUndo').addEventListener('click', undo);
-document.getElementById('btnDemo').addEventListener('click', doDemoStep);
+document.getElementById('btnDemo').addEventListener('click', toggleDemo);
 
 /* 启动 */
 newGame();
