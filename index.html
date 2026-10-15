@@ -17,17 +17,43 @@
     align-items: center;
     padding: 18px 12px 40px;
   }
-  h1 {
-    font-size: 22px;
-    letter-spacing: 4px;
-    margin: 4px 0 2px;
-    background: linear-gradient(90deg, #ff6b5b, #5bff9d, #5ba8ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-weight: 800;
+  #home {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 80vh; gap: 18px; text-align: center;
   }
-  .sub { font-size: 12px; color: #7a839b; letter-spacing: 1px; margin-bottom: 14px; }
+  #home h1 {
+    font-size: 42px; letter-spacing: 6px; margin: 0;
+    background: linear-gradient(90deg, #ff6b5b, #5bff9d, #5ba8ff);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent; font-weight: 900;
+    text-shadow: 0 0 40px rgba(90,170,255,.25);
+  }
+  #home .sub { font-size: 14px; color: #7a839b; letter-spacing: 3px; margin-top: -8px; }
+  #home .modes { display: flex; gap: 18px; margin-top: 14px; flex-wrap: wrap; justify-content: center; }
+  #home .mode-btn {
+    width: 180px; padding: 18px 12px;
+    border-radius: 16px; border: 1px solid #34405c;
+    background: #151a26; color: #d7deee;
+    font-size: 18px; font-weight: 800; letter-spacing: 2px;
+    cursor: pointer; transition: all .2s;
+    box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  #home .mode-btn:hover {
+    transform: translateY(-3px); border-color: #5b8cff;
+    background: #1c2640; box-shadow: 0 12px 32px rgba(60,120,255,.25);
+  }
+  #home .mode-btn .icon { font-size: 28px; }
+  #home .mode-btn .desc { font-size: 11px; color: #6f7b99; letter-spacing: 1px; font-weight: 400; }
+
+  #game { display: none; flex-direction: column; align-items: center; width: 100%; }
+  h1.game-title {
+    font-size: 22px; letter-spacing: 4px; margin: 4px 0 2px;
+    background: linear-gradient(90deg, #ff6b5b, #5bff9d, #5ba8ff);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent; font-weight: 800;
+  }
+  .sub.game-sub { font-size: 12px; color: #7a839b; letter-spacing: 1px; margin-bottom: 14px; }
 
   #board {
     display: grid;
@@ -40,41 +66,24 @@
   }
 
   .face {
-    background: #151a26;
-    border: 1px solid #262f45;
-    border-radius: 12px;
-    padding: 6px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 3px;
-    position: relative;
+    background: #151a26; border: 1px solid #262f45; border-radius: 12px;
+    padding: 6px; display: grid;
+    grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
+    gap: 3px; position: relative;
     box-shadow: 0 6px 18px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.02);
   }
   .face .tag {
-    position: absolute;
-    top: -9px; left: 8px;
-    font-size: 10px;
-    padding: 0 5px;
-    background: #0b0d14;
-    color: #6f7b99;
-    border-radius: 4px;
-    letter-spacing: 1px;
-    border: 1px solid #262f45;
+    position: absolute; top: -9px; left: 8px;
+    font-size: 10px; padding: 0 5px;
+    background: #0b0d14; color: #6f7b99;
+    border-radius: 4px; letter-spacing: 1px; border: 1px solid #262f45;
   }
 
   .cell {
-    border-radius: 7px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 16px;
-    cursor: pointer;
+    border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px; cursor: pointer;
     transition: transform .12s, box-shadow .12s, background .12s;
-    user-select: none;
-    position: relative;
-    border: 1px solid transparent;
+    user-select: none; position: relative; border: 1px solid transparent;
   }
   @media (max-width: 620px) { .cell { font-size: 12px; border-radius: 5px; } }
 
@@ -83,11 +92,21 @@
   .color-B { background: linear-gradient(150deg,#20548c,#0e2745); border-color:#3d9ae6; color:#cfe8ff; }
 
   .cell.visited { opacity: .95; }
-  .cell.visited::after { content:''; position:absolute; inset:0; border-radius:inherit; background: rgba(0,0,0,.28); }
+  .cell.visited::after { content:''; position:absolute; inset:0; border-radius:inherit; background: rgba(0,0,0,.28); pointer-events:none; }
   .cell.visited { color:#fff; text-shadow: 0 0 8px rgba(255,255,255,.8); }
   .cell.visited > * { position: relative; z-index: 2; }
 
-  /* 普通移动可达（相邻格）——金色 */
+  /* 已知数字——不覆盖背景色 */
+  .cell.known {
+    border: 2px dashed #ffe9a8 !important;
+    box-shadow: inset 0 0 0 1px rgba(255,233,168,.25), 0 0 10px rgba(255,233,168,.35);
+  }
+  .cell.known::before {
+    content: '🔒'; position: absolute;
+    top: 0px; right: 2px; font-size: 9px; opacity: .9;
+    z-index: 5; filter: drop-shadow(0 0 2px rgba(0,0,0,.9));
+  }
+
   .cell.reachable {
     box-shadow: 0 0 0 2px #ffd166, 0 0 14px rgba(255,209,102,.55);
     animation: pulseGold 1.2s infinite ease-in-out;
@@ -96,8 +115,6 @@
     0%,100% { box-shadow: 0 0 0 2px #ffd166, 0 0 10px rgba(255,209,102,.35); }
     50%     { box-shadow: 0 0 0 2px #ffe9a8, 0 0 18px rgba(255,209,102,.85); }
   }
-
-  /* 触发后可达（可能在另一个面）——紫色 */
   .cell.reachable-trigger {
     box-shadow: 0 0 0 2px #b06bff, 0 0 16px rgba(176,107,255,.65);
     animation: pulsePurple 1.3s infinite ease-in-out;
@@ -106,56 +123,33 @@
     0%,100% { box-shadow: 0 0 0 2px #b06bff, 0 0 10px rgba(176,107,255,.4); }
     50%     { box-shadow: 0 0 0 2px #d4aaff, 0 0 22px rgba(176,107,255,.95); }
   }
-
   .cell.current {
     box-shadow: 0 0 0 3px #ffffff, 0 0 22px rgba(255,255,255,.85);
-    z-index: 3;
-    transform: scale(1.04);
+    z-index: 3; transform: scale(1.04);
   }
-  .cell.current.can-trigger {
-    animation: curPulse 1s infinite ease-in-out;
-  }
+  .cell.current.can-trigger { animation: curPulse 1s infinite ease-in-out; }
   @keyframes curPulse {
     0%,100% { box-shadow: 0 0 0 3px #fff, 0 0 16px rgba(255,255,255,.7); }
     50%     { box-shadow: 0 0 0 3px #fff, 0 0 30px rgba(140,200,255,1); }
   }
-  .cell.current::before {
-    content: '●';
-    position: absolute;
-    top: 1px; left: 3px;
-    font-size: 8px;
-    color: #fff;
-    z-index: 4;
+  .cell.current::after {
+    content: '●'; position: absolute;
+    top: 1px; left: 3px; font-size: 8px; color: #fff; z-index: 4;
   }
 
-  /* ===== 面板 ===== */
   #panel {
-    margin-top: 18px;
-    width: min(560px, 96vw);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    margin-top: 18px; width: min(560px, 96vw);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
   }
   .card {
-    background: #151a26;
-    border: 1px solid #262f45;
-    border-radius: 12px;
-    padding: 10px 12px;
+    background: #151a26; border: 1px solid #262f45;
+    border-radius: 12px; padding: 10px 12px;
   }
   .card h3 {
-    margin: 0 0 8px;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: #6f7b99;
-    font-weight: 700;
+    margin: 0 0 8px; font-size: 11px;
+    letter-spacing: 2px; color: #6f7b99; font-weight: 700;
   }
-  .sw {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    padding: 5px 0;
-  }
+  .sw { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 5px 0; }
   .dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; }
   .dot.R { background:#e0503f; box-shadow:0 0 10px #e0503f; }
   .dot.G { background:#31c977; box-shadow:0 0 10px #31c977; }
@@ -163,57 +157,36 @@
   .sw .val { margin-left: auto; font-weight: 800; letter-spacing: 1px; }
   .sw.active { color: #ffe9a8; }
 
-  #gravityBox {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
+  #gravityBox { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; }
   .gdir {
-    font-size: 34px;
-    font-weight: 900;
-    line-height: 1;
-    color: #8ec5ff;
-    text-shadow: 0 0 18px rgba(90,170,255,.8);
-    min-width: 46px;
-    text-align: center;
+    font-size: 34px; font-weight: 900; line-height: 1;
+    color: #8ec5ff; text-shadow: 0 0 18px rgba(90,170,255,.8);
+    min-width: 46px; text-align: center;
   }
   .gtext { font-size: 13px; color: #9aa5bf; }
   .gtext b { color: #fff; font-size: 15px; }
 
   #progBarWrap {
-    grid-column: 1 / -1;
-    height: 8px;
-    background: #0d111a;
-    border-radius: 99px;
-    overflow: hidden;
-    border: 1px solid #262f45;
+    grid-column: 1 / -1; height: 8px;
+    background: #0d111a; border-radius: 99px;
+    overflow: hidden; border: 1px solid #262f45;
   }
   #progBar {
-    height: 100%;
-    width: 0%;
+    height: 100%; width: 0%;
     background: linear-gradient(90deg, #ff6b5b, #ffd166, #5bff9d);
     transition: width .25s;
   }
 
   #btns {
     grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 8px;
   }
+  @media (max-width: 620px) { #btns { grid-template-columns: 1fr 1fr; } }
   button {
-    padding: 10px 8px;
-    border-radius: 10px;
-    border: 1px solid #34405c;
-    background: #1c2333;
-    color: #d7deee;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all .15s;
-    white-space: nowrap;
+    padding: 10px 6px; border-radius: 10px; border: 1px solid #34405c;
+    background: #1c2333; color: #d7deee;
+    font-size: 12px; font-weight: 700; letter-spacing: .5px;
+    cursor: pointer; transition: all .15s; white-space: nowrap;
   }
   button:hover { background: #263149; border-color: #4a5c85; color: #fff; }
   button:active { transform: scale(.97); }
@@ -223,23 +196,17 @@
   button.lamp:hover { background: linear-gradient(135deg,#b08a1a,#6e560c); border-color:#ffd766; }
   button.lamp.on { background: linear-gradient(135deg,#c79a1c,#8a6a12); border-color:#ffd766; color:#fff; box-shadow: 0 0 18px rgba(255,215,102,.55); }
   button.undo { background: #232a3d; border-color: #4a5c85; }
+  button.home { background: #2a1f2e; border-color: #7a4a8a; color: #e0b0ff; }
+  button.home:hover { background: #3d2a42; border-color: #a06ab0; }
   button:disabled { opacity:.45; cursor:not-allowed; }
 
   #toast {
-    position: fixed;
-    left: 50%;
-    top: 26px;
+    position: fixed; left: 50%; top: 26px;
     transform: translateX(-50%) translateY(-20px);
-    background: rgba(20,26,38,.96);
-    border: 1px solid #3a4a6d;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 700;
-    opacity: 0;
-    pointer-events: none;
-    transition: all .3s;
-    z-index: 99;
+    background: rgba(20,26,38,.96); border: 1px solid #3a4a6d;
+    padding: 10px 20px; border-radius: 10px;
+    font-size: 14px; font-weight: 700;
+    opacity: 0; pointer-events: none; transition: all .3s; z-index: 99;
     box-shadow: 0 8px 30px rgba(0,0,0,.6);
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -248,47 +215,69 @@
   .hint b { color: #9aa5bf; }
   .hint .gold { color:#ffd166; }
   .hint .purple { color:#c79aff; }
+  .hint .known { color:#ffe9a8; }
 </style>
 </head>
 <body>
 
-<h1>重 力 跃 迁</h1>
-<div class="sub">GRAVITY LEAP · 3×3×3 立方体 54 格</div>
-
-<div id="board"></div>
-
-<div id="panel">
-  <div class="card">
-    <h3>开关状态</h3>
-    <div class="sw" id="swR"><span class="dot R"></span>红色 · 上下<span class="val">↓ 下</span></div>
-    <div class="sw" id="swG"><span class="dot G"></span>绿色 · 左右<span class="val">→ 右</span></div>
-    <div class="sw" id="swB"><span class="dot B"></span>蓝色 · 前后<span class="val">⊗ 后</span></div>
+<div id="home">
+  <h1>重 力 跃 迁</h1>
+  <div class="sub">GRAVITY LEAP</div>
+  <div class="modes">
+    <button class="mode-btn" data-mode="practice">
+      <span class="icon">🧩</span>
+      <span>练习模式</span>
+      <span class="desc">只给起点 1 · 自由探索</span>
+    </button>
+    <button class="mode-btn" data-mode="simple">
+      <span class="icon">🔮</span>
+      <span>简单模式</span>
+      <span class="desc">30-40 个提示 · 唯一解</span>
+    </button>
   </div>
+</div>
 
-  <div class="card">
-    <h3>玩法</h3>
-    <div class="hint">
-      <b>点击相邻格</b>移动 · <b>点击当前格</b>触发开关<br>
-      <span class="gold">■</span> 金色 = 同面相邻格 · <span class="purple">■</span> 紫色 = 触发后可到达<br>
-      💡 <b>演示模式</b>：点击空白处走一步，双击空白处撤回
+<div id="game">
+  <h1 class="game-title">重 力 跃 迁</h1>
+  <div class="sub game-sub" id="modeLabel">练习模式</div>
+
+  <div id="board"></div>
+
+  <div id="panel">
+    <div class="card">
+      <h3>开关状态</h3>
+      <div class="sw" id="swR"><span class="dot R"></span>红色 · 上下<span class="val">↓ 下</span></div>
+      <div class="sw" id="swG"><span class="dot G"></span>绿色 · 左右<span class="val">→ 右</span></div>
+      <div class="sw" id="swB"><span class="dot B"></span>蓝色 · 前后<span class="val">⊗ 后</span></div>
     </div>
-  </div>
 
-  <div class="card" id="gravityBox">
-    <div class="gdir" id="gdir">↓</div>
-    <div class="gtext">
-      当前重力方向：<b id="gtext">下</b><br>
-      <span style="color:#6f7b99">已通过格子：<b id="scoreText" style="color:#ffe9a8">1</b> / 54</span>
+    <div class="card">
+      <h3>玩法</h3>
+      <div class="hint">
+        <b>点击相邻格</b>移动 · <b>点击当前格</b>触发开关<br>
+        <span class="gold">■</span> 金色 = 同面相邻格 · <span class="purple">■</span> 紫色 = 触发后可到达<br>
+        <span class="known">🔒</span> 虚线框 = 已知数字（必须匹配）<br>
+        💡 <b>演示模式</b>：点击空白走一步，双击撤回
+      </div>
     </div>
-  </div>
 
-  <div id="progBarWrap"><div id="progBar"></div></div>
+    <div class="card" id="gravityBox">
+      <div class="gdir" id="gdir">↓</div>
+      <div class="gtext">
+        当前重力方向：<b id="gtext">下</b><br>
+        <span style="color:#6f7b99">已通过格子：<b id="scoreText" style="color:#ffe9a8">1</b> / 54</span>
+      </div>
+    </div>
 
-  <div id="btns">
-    <button id="btnUndo" class="undo">↶ 撤回</button>
-    <button id="btnDemo" class="lamp">💡 演示答案</button>
-    <button id="btnRestart">重来本局</button>
-    <button id="btnNew" class="primary">生成新题</button>
+    <div id="progBarWrap"><div id="progBar"></div></div>
+
+    <div id="btns">
+      <button id="btnHome" class="home">🏠 首页</button>
+      <button id="btnUndo" class="undo">↶ 撤回</button>
+      <button id="btnDemo" class="lamp">💡 演示</button>
+      <button id="btnRestart">重来</button>
+      <button id="btnNew" class="primary">新题</button>
+    </div>
   </div>
 </div>
 
@@ -299,22 +288,16 @@
    1. 立方体几何模型
    ========================================================= */
 const FACE_DEF = {
-  R: { axis: 0, val: 2, dir: '+x' },
-  L: { axis: 0, val: 0, dir: '-x' },
-  U: { axis: 1, val: 2, dir: '+y' },
-  D: { axis: 1, val: 0, dir: '-y' },
-  F: { axis: 2, val: 2, dir: '+z' },
-  B: { axis: 2, val: 0, dir: '-z' },
+  R: { axis: 0, val: 2 }, L: { axis: 0, val: 0 },
+  U: { axis: 1, val: 2 }, D: { axis: 1, val: 0 },
+  F: { axis: 2, val: 2 }, B: { axis: 2, val: 0 },
 };
 const FACES = ['U', 'D', 'L', 'R', 'F', 'B'];
 
 const DIR_DEF = {
-  '+x': { axis: 0, val: 2, face: 'R' },
-  '-x': { axis: 0, val: 0, face: 'L' },
-  '+y': { axis: 1, val: 2, face: 'U' },
-  '-y': { axis: 1, val: 0, face: 'D' },
-  '+z': { axis: 2, val: 2, face: 'F' },
-  '-z': { axis: 2, val: 0, face: 'B' },
+  '+x': { axis: 0, val: 2, face: 'R' }, '-x': { axis: 0, val: 0, face: 'L' },
+  '+y': { axis: 1, val: 2, face: 'U' }, '-y': { axis: 1, val: 0, face: 'D' },
+  '+z': { axis: 2, val: 2, face: 'F' }, '-z': { axis: 2, val: 0, face: 'B' },
 };
 
 const TILES = [];
@@ -326,8 +309,7 @@ for (const f of FACES) {
     for (let j = 0; j < 3; j++) {
       const c = [0, 0, 0];
       c[d.axis] = d.val;
-      c[free[0]] = i;
-      c[free[1]] = j;
+      c[free[0]] = i; c[free[1]] = j;
       const t = { id: f + i + j, face: f, x: c[0], y: c[1], z: c[2] };
       TILES.push(t);
       TILE_INDEX.set(f + ':' + c[0] + ',' + c[1] + ',' + c[2], t);
@@ -358,6 +340,9 @@ function neighborsOf(t) {
   return res;
 }
 
+const NEIGHBOR_IDS = {};
+for (const t of TILES) NEIGHBOR_IDS[t.id] = neighborsOf(t).map(n => n.id);
+
 function project(t, dirKey) {
   const d = DIR_DEF[dirKey];
   const c = [t.x, t.y, t.z];
@@ -371,6 +356,14 @@ function flipDir(color, cur) {
   return cur === '-z' ? '+z' : '-z';
 }
 
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = (Math.random() * (i + 1)) | 0;
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 /* =========================================================
    2. 题面生成器（回溯搜索 1~54 完整路径）
    ========================================================= */
@@ -379,13 +372,12 @@ function attemptBuild(nodeLimit) {
   let aborted = false;
   const visited = new Set();
   const path = [];
-
   const downTiles = TILES.filter(t => t.face === 'D');
   const start = downTiles[(Math.random() * downTiles.length) | 0];
 
   function deg(t) {
     let d = 0;
-    for (const nb of neighborsOf(t)) if (!visited.has(nb.id)) d++;
+    for (const nbId of NEIGHBOR_IDS[t.id]) if (!visited.has(nbId)) d++;
     return d;
   }
 
@@ -393,17 +385,15 @@ function attemptBuild(nodeLimit) {
     if (++nodes > nodeLimit) { aborted = true; return false; }
     visited.add(tile.id);
     path.push({ tile, trigger: null });
-
     if (path.length === 54) return true;
 
     const cands = [];
-
-    for (const nb of neighborsOf(tile)) {
-      if (!visited.has(nb.id)) {
+    for (const nbId of NEIGHBOR_IDS[tile.id]) {
+      if (!visited.has(nbId)) {
+        const nb = TILE_MAP[nbId];
         cands.push({ target: nb, trigger: null, newDir: null, score: deg(nb) + Math.random() * 0.85 });
       }
     }
-
     const opts = [
       { color: 'R', newDir: red === '-y' ? '+y' : '-y' },
       { color: 'G', newDir: green === '+x' ? '-x' : '+x' },
@@ -411,11 +401,9 @@ function attemptBuild(nodeLimit) {
     ];
     for (const o of opts) {
       const tgt = project(tile, o.newDir);
-      if (!tgt || tgt.id === tile.id) continue;
-      if (visited.has(tgt.id)) continue;
+      if (!tgt || tgt.id === tile.id || visited.has(tgt.id)) continue;
       cands.push({ target: tgt, trigger: o.color, newDir: o.newDir, score: deg(tgt) + Math.random() * 0.85 });
     }
-
     cands.sort((a, b) => a.score - b.score);
 
     for (const c of cands) {
@@ -432,7 +420,6 @@ function attemptBuild(nodeLimit) {
       }
       if (aborted) return false;
     }
-
     visited.delete(tile.id);
     path.pop();
     return false;
@@ -465,7 +452,157 @@ function generatePuzzle() {
 }
 
 /* =========================================================
-   3. 界面构建
+   3. 求解器：统计满足已知数字的完整路径（最多 maxSolutions 条）
+   ========================================================= */
+function solvePuzzle(knownMap, colors, maxSolutions, nodeLimit) {
+  let startId = null;
+  for (const id in knownMap) {
+    if (knownMap[id] === 1) { startId = id; break; }
+  }
+  if (!startId) return [];
+
+  const solutions = [];
+  const visited = new Set();
+  const path = new Array(54);
+  let nodes = 0;
+  let aborted = false;
+
+  function dfs(tileId, step, swR, swG, swB) {
+    if (aborted || solutions.length >= maxSolutions) return;
+    if (++nodes > nodeLimit) { aborted = true; return; }
+
+    const kc = knownMap[tileId];
+    if (kc !== undefined && kc !== step) return;
+
+    path[step - 1] = tileId;
+
+    if (step === 54) {
+      solutions.push(path.slice());
+      return;
+    }
+
+    const tile = TILE_MAP[tileId];
+    const color = colors[tileId];
+    const curDir = color === 'R' ? swR : color === 'G' ? swG : swB;
+    const newDir = flipDir(color, curDir);
+    const nextStep = step + 1;
+
+    // 优先尝试触发（跨面跳跃）
+    const tgt = project(tile, newDir);
+    if (tgt && tgt.id !== tileId && !visited.has(tgt.id)) {
+      const k = knownMap[tgt.id];
+      if (k === undefined || k === nextStep) {
+        visited.add(tgt.id);
+        if (color === 'R') dfs(tgt.id, nextStep, newDir, swG, swB);
+        else if (color === 'G') dfs(tgt.id, nextStep, swR, newDir, swB);
+        else dfs(tgt.id, nextStep, swR, swG, newDir);
+        visited.delete(tgt.id);
+        if (aborted || solutions.length >= maxSolutions) return;
+      }
+    }
+
+    // 同面相邻移动
+    for (const nbId of NEIGHBOR_IDS[tileId]) {
+      if (visited.has(nbId)) continue;
+      const k = knownMap[nbId];
+      if (k !== undefined && k !== nextStep) continue;
+      visited.add(nbId);
+      dfs(nbId, nextStep, swR, swG, swB);
+      visited.delete(nbId);
+      if (aborted || solutions.length >= maxSolutions) return;
+    }
+  }
+
+  visited.add(startId);
+  dfs(startId, 1, '-y', '+x', '-z');
+  return solutions;
+}
+
+/* =========================================================
+   4. 简单模式已知数字生成：贪心添加 + 唯一性收敛
+   目标：30-40 个数字，且唯一解
+   ========================================================= */
+function generateKnownForSimple(puzzle) {
+  const { colors, solution } = puzzle;
+  const known = {};
+  known[solution[0]] = 1;
+
+  // 初始：每隔 4 步取一个数字（约 13 个）
+  for (let i = 4; i < 54; i += 4) {
+    known[solution[i]] = i + 1;
+  }
+
+  const NODE_LIMIT = 600000;
+  const MAX_KNOWN = 38;  // 硬上限，超出则停止添加
+  let guard = 0;
+
+  while (guard < 80) {
+    const sols = solvePuzzle(known, colors, 2, NODE_LIMIT);
+
+    // 检查是否唯一且等于目标解
+    if (sols.length === 1) {
+      let ok = true;
+      for (let i = 0; i < 54; i++) {
+        if (sols[0][i] !== solution[i]) { ok = false; break; }
+      }
+      if (ok) break;
+    }
+
+    // 若当前已知数字已经达到上限，跳出（一般不会到这里）
+    if (Object.keys(known).length >= MAX_KNOWN) break;
+
+    // 找到与目标解最早分歧的位置
+    let minDiff = 54;
+    for (const sol of sols) {
+      for (let i = 0; i < 54; i++) {
+        if (sol[i] !== solution[i]) {
+          if (i < minDiff) minDiff = i;
+          break;
+        }
+      }
+    }
+    if (minDiff >= 54) break;
+
+    // 在分歧位置添加数字（如果该位置已存在，就往后找第一个空位）
+    let added = false;
+    for (let i = minDiff; i < 54; i++) {
+      if (known[solution[i]] === undefined) {
+        known[solution[i]] = i + 1;
+        added = true;
+        break;
+      }
+    }
+    if (!added) break;
+    guard++;
+  }
+
+  // 后处理：尝试移除一些数字以进一步精简（保持唯一性）
+  const order = [];
+  for (let i = 1; i < 54; i++) order.push(i);
+  shuffle(order);
+
+  const MIN_KNOWN = 30;
+  for (const idx of order) {
+    if (Object.keys(known).length <= MIN_KNOWN) break;
+    const id = solution[idx];
+    const saved = known[id];
+    delete known[id];
+
+    const sols = solvePuzzle(known, colors, 2, NODE_LIMIT);
+    let ok = sols.length === 1;
+    if (ok) {
+      for (let i = 0; i < 54; i++) {
+        if (sols[0][i] !== solution[i]) { ok = false; break; }
+      }
+    }
+    if (!ok) known[id] = saved;
+  }
+
+  return known;
+}
+
+/* =========================================================
+   5. 界面构建
    ========================================================= */
 const NET_POS = {
   U: { r: 0, c: 1 }, L: { r: 1, c: 0 }, F: { r: 1, c: 1 },
@@ -519,17 +656,37 @@ for (const f of ['U', 'L', 'F', 'R', 'B', 'D']) {
 }
 
 /* =========================================================
-   4. 游戏状态与逻辑
+   6. 游戏状态与逻辑
    ========================================================= */
 let game = null;
 let puzzle = null;
 let demoMode = false;
+let currentMode = 'practice';
 
 const DIR_TEXT = {
   '-y': ['↓', '下'], '+y': ['↑', '上'],
   '+x': ['→', '右'], '-x': ['←', '左'],
   '+z': ['⊙', '前'], '-z': ['⊗', '后'],
 };
+
+function showHome() {
+  document.getElementById('home').style.display = 'flex';
+  document.getElementById('game').style.display = 'none';
+  exitDemoMode();
+}
+
+function startGame(mode) {
+  currentMode = mode;
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('game').style.display = 'flex';
+  document.getElementById('modeLabel').textContent = mode === 'practice' ? '练习模式' : '简单模式';
+  newGame();
+}
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => startGame(btn.dataset.mode));
+});
+document.getElementById('btnHome').addEventListener('click', showHome);
 
 function newGame() {
   exitDemoMode();
@@ -538,8 +695,19 @@ function newGame() {
     const p = generatePuzzle();
     if (!p) { toast('生成失败，请再试一次'); return; }
     puzzle = p;
-    startFromPuzzle();
-    toast('题目已生成 · 起点为数字 1');
+
+    if (currentMode === 'simple') {
+      const known = generateKnownForSimple(p);
+      puzzle.knownNumbers = known;
+      const cnt = Object.keys(known).length;
+      startFromPuzzle();
+      toast('简单模式 · 唯一解 · 提示 ' + cnt + ' 个数字');
+    } else {
+      puzzle.knownNumbers = {};
+      puzzle.knownNumbers[p.start] = 1;
+      startFromPuzzle();
+      toast('练习模式 · 起点为数字 1');
+    }
   }, 30);
 }
 
@@ -558,6 +726,7 @@ function startFromPuzzle() {
     triggerTargetId: null,
     canTrigger: false,
     history: [],
+    knownNumbers: puzzle.knownNumbers || {},
   };
   game.order[puzzle.start] = 1;
   updateReachable();
@@ -576,7 +745,6 @@ function pushHistory() {
   });
 }
 
-/* ============ 核心：更新所有可达格（含触发跨面） ============ */
 function updateReachable() {
   const cur = TILE_MAP[game.current];
   game.reachableMove = new Set();
@@ -585,24 +753,25 @@ function updateReachable() {
   game.triggerTargetId = null;
   game.canTrigger = false;
 
-  // 1) 当前面相邻格
-  for (const nb of neighborsOf(cur)) {
-    if (!game.order[nb.id]) {
-      game.reachableMove.add(nb.id);
-      game.reachable.add(nb.id);
-    }
+  for (const nbId of NEIGHBOR_IDS[game.current]) {
+    if (game.order[nbId]) continue;
+    const known = game.knownNumbers[nbId];
+    if (known !== undefined && known !== game.step + 1) continue;
+    game.reachableMove.add(nbId);
+    game.reachable.add(nbId);
   }
 
-  // 2) 触发后投影到的新面格子（可能在其他面）
   const color = game.colors[game.current];
   const nd = flipDir(color, game.switches[color]);
   const tgt = project(cur, nd);
-
   if (tgt && tgt.id !== cur.id && !game.order[tgt.id]) {
-    game.reachableTrigger.add(tgt.id);
-    game.reachable.add(tgt.id);
-    game.triggerTargetId = tgt.id;
-    game.canTrigger = true;
+    const known = game.knownNumbers[tgt.id];
+    if (known === undefined || known === game.step + 1) {
+      game.reachableTrigger.add(tgt.id);
+      game.reachable.add(tgt.id);
+      game.triggerTargetId = tgt.id;
+      game.canTrigger = true;
+    }
   }
 }
 
@@ -615,17 +784,16 @@ function handleClick(id) {
     else toast('此方向已被占据，无法触发');
     return;
   }
-
-  if (game.triggerTargetId === id) {
-    doTrigger();
-    return;
-  }
-  if (game.reachableMove.has(id)) {
-    doMove(id);
-  }
+  if (game.triggerTargetId === id) { doTrigger(); return; }
+  if (game.reachableMove.has(id)) doMove(id);
 }
 
 function doMove(id) {
+  const known = game.knownNumbers[id];
+  if (known !== undefined && known !== game.step + 1) {
+    toast('该格已知数字为 ' + known + '，与当前步数不符');
+    return;
+  }
   pushHistory();
   game.current = id;
   game.order[id] = ++game.step;
@@ -640,6 +808,12 @@ function doTrigger() {
   const nd = flipDir(color, game.switches[color]);
   const tgt = project(TILE_MAP[game.current], nd);
   if (!tgt || game.order[tgt.id]) { toast('无法触发'); return; }
+
+  const known = game.knownNumbers[tgt.id];
+  if (known !== undefined && known !== game.step + 1) {
+    toast('落点已知数字为 ' + known + '，与当前步数不符');
+    return;
+  }
 
   pushHistory();
   game.switches[color] = nd;
@@ -667,9 +841,6 @@ function checkOver() {
   }
 }
 
-/* =========================================================
-   5. 撤回
-   ========================================================= */
 function undo() {
   if (!game) return;
   if (!game.history.length) { toast('没有可撤回的操作'); return; }
@@ -685,9 +856,6 @@ function undo() {
   toast('已撤回一步');
 }
 
-/* =========================================================
-   6. 演示答案（灯泡）
-   ========================================================= */
 function simulateSwitches(n) {
   const sw = { R: '-y', G: '+x', B: '-z' };
   for (let i = 0; i < n - 1; i++) {
@@ -708,28 +876,29 @@ function inSyncWithSolution() {
 
 function doDemoStep() {
   if (!game || !puzzle) return;
-
   if (game.step >= 54) {
     toast('已经走完全部 54 格啦');
     if (demoMode) exitDemoMode();
     return;
   }
-
   if (!inSyncWithSolution()) {
     startFromPuzzle();
     toast('💡 从起点重新演示');
   }
-
   const i = game.step - 1;
   if (i >= puzzle.solution.length - 1) {
     toast('已到最后一步');
     if (demoMode) exitDemoMode();
     return;
   }
-
   const toId = puzzle.solution[i + 1];
   const trg = puzzle.triggers[i];
-
+  const known = game.knownNumbers[toId];
+  if (known !== undefined && known !== game.step + 1) {
+    toast('演示路径与已知数字冲突，已重置');
+    startFromPuzzle();
+    return;
+  }
   pushHistory();
   if (trg) {
     const nd = flipDir(trg, game.switches[trg]);
@@ -738,56 +907,38 @@ function doDemoStep() {
   }
   game.current = toId;
   game.order[toId] = ++game.step;
-
   updateReachable();
   render();
   checkOver();
 }
 
-/* 进入/退出演示模式 */
 function enterDemoMode() {
   demoMode = true;
   const btn = document.getElementById('btnDemo');
   btn.classList.add('on');
-  btn.textContent = '💡 演示中…';
-  toast('演示模式：点击空白处走一步 · 双击空白处撤回');
+  btn.textContent = '💡 演示中';
+  toast('演示模式：点击空白走一步 · 双击空白撤回');
 }
 
 function exitDemoMode() {
   demoMode = false;
-  if (pendingDemoTimer) {
-    clearTimeout(pendingDemoTimer);
-    pendingDemoTimer = null;
-  }
+  if (pendingDemoTimer) { clearTimeout(pendingDemoTimer); pendingDemoTimer = null; }
   const btn = document.getElementById('btnDemo');
-  btn.classList.remove('on');
-  btn.textContent = '💡 演示答案';
+  if (btn) { btn.classList.remove('on'); btn.textContent = '💡 演示'; }
 }
 
 function toggleDemo() {
   if (!puzzle) return;
-  if (!demoMode) {
-    enterDemoMode();
-    doDemoStep();
-  } else {
-    exitDemoMode();
-    toast('已退出演示模式');
-  }
+  if (!demoMode) { enterDemoMode(); doDemoStep(); }
+  else { exitDemoMode(); toast('已退出演示模式'); }
 }
 
-/* =========================================================
-   7. 空白处点击：单击走一步 / 双击撤回
-   ========================================================= */
 let pendingDemoTimer = null;
-
 document.addEventListener('click', (e) => {
   if (!demoMode) return;
   if (e.target.closest('button')) return;
   if (e.target.closest('.cell')) return;
-
-  // 空白区域点击
   if (pendingDemoTimer) {
-    // 检测到双击 → 撤回
     clearTimeout(pendingDemoTimer);
     pendingDemoTimer = null;
     undo();
@@ -798,20 +949,13 @@ document.addEventListener('click', (e) => {
     doDemoStep();
   }, 260);
 });
-
-// 防止浏览器原生 dblclick 额外触发
 document.addEventListener('dblclick', (e) => {
   if (e.target.closest('button')) return;
   if (e.target.closest('.cell')) return;
-  if (pendingDemoTimer) {
-    clearTimeout(pendingDemoTimer);
-    pendingDemoTimer = null;
-  }
+  if (pendingDemoTimer) { clearTimeout(pendingDemoTimer); pendingDemoTimer = null; }
 });
 
-/* =========================================================
-   8. 渲染
-   ========================================================= */
+/* ---------- 渲染 ---------- */
 function render() {
   if (!game) return;
 
@@ -822,8 +966,18 @@ function render() {
         const el = TILE_EL[t.id];
         el.className = 'cell color-' + game.colors[t.id];
         const ord = game.order[t.id];
-        el.textContent = ord ? ord : '';
-        if (ord) el.classList.add('visited');
+        const known = game.knownNumbers[t.id];
+
+        if (ord) {
+          el.textContent = ord;
+          el.classList.add('visited');
+        } else if (known !== undefined) {
+          el.textContent = known;
+        } else {
+          el.textContent = '';
+        }
+
+        if (known !== undefined) el.classList.add('known');
         if (game.reachableMove.has(t.id)) el.classList.add('reachable');
         if (game.reachableTrigger.has(t.id)) el.classList.add('reachable-trigger');
         if (t.id === game.current) {
@@ -865,9 +1019,6 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
 }
 
-/* =========================================================
-   9. 按钮
-   ========================================================= */
 document.getElementById('btnRestart').addEventListener('click', () => {
   if (puzzle) { exitDemoMode(); startFromPuzzle(); toast('已重置本局'); }
 });
@@ -875,8 +1026,7 @@ document.getElementById('btnNew').addEventListener('click', newGame);
 document.getElementById('btnUndo').addEventListener('click', undo);
 document.getElementById('btnDemo').addEventListener('click', toggleDemo);
 
-/* 启动 */
-newGame();
+showHome();
 </script>
 </body>
 </html>
